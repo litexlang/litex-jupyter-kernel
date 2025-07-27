@@ -1,1 +1,1 @@
-# litex_kernel_for_jupyter
+# A jupyter kernel for litex
