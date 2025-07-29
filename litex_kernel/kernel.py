@@ -8,7 +8,7 @@ import re
 
 __version__ = "0.1.0"
 version_pat = re.compile(r"version (\d+(\.\d+)+)")
-litex_path = r"../litex"
+litex_path = r"../litex -jupyter"
 
 
 class LitexKernel(Kernel):
@@ -30,8 +30,6 @@ class LitexKernel(Kernel):
 
     language_info = {
         "name": "litex",
-        "codemirror_mode": "shell",
-        "mimetype": "text/x-sh",
         "file_extension": ".lix",
     }
 
@@ -49,7 +47,9 @@ class LitexKernel(Kernel):
         self.litexwrapper = replwrap.REPLWrapper(litex_path, prompt, None)
         self.litexwrapper.child.delaybeforesend = 0.1
 
-    def do_execute(self, code, silent):
+    def do_execute(
+        self, code, silent, store_history=True, user_expressions=None, allow_stdin=False
+    ):
         self.silent = silent
         if not code.strip():
             return {
@@ -73,7 +73,10 @@ class LitexKernel(Kernel):
         interrupted = False
         try:
             # Note: timeout=None tells IREPLWrapper to do incremental output.  Also note that the return value from run_command is not needed, because the output was already sent by IREPLWrapper.
-            self.litexwrapper.run_command(code.rstrip(), timeout=None)
+            output = self.litexwrapper.run_command(code.rstrip(), timeout=None)
+            self.send_response(
+                self.iopub_socket, "stream", {"name": "stdout", "text": output}
+            )
         except KeyboardInterrupt:
             self.litexwrapper.child.sendintr()
             interrupted = True
@@ -83,7 +86,7 @@ class LitexKernel(Kernel):
                 self.iopub_socket, "stream", {"name": "stdout", "text": output}
             )
         except EOF:
-            output = self.litexwrapper.child.before + "Restarting Litex"
+            output = self.litexwrapper.child.before
             self._start_litex()
             self.send_response(
                 self.iopub_socket, "stream", {"name": "stdout", "text": output}
@@ -92,24 +95,9 @@ class LitexKernel(Kernel):
         if interrupted:
             return {"status": "abort", "execution_count": self.execution_count}
 
-        try:
-            exitcode = int(
-                self.litexwrapper.run_command("obj human set").rstrip().split("\r\n")[0]
-            )
-        except Exception as exc:
-            exitcode = 1
-
-        if exitcode:
-            error_content = {"ename": "", "evalue": str(exitcode), "traceback": []}
-            self.send_response(self.iopub_socket, "error", error_content)
-
-            error_content["execution_count"] = self.execution_count
-            error_content["status"] = "error"
-            return error_content
-        else:
-            return {
-                "status": "ok",
-                "execution_count": self.execution_count,
-                "payload": [],
-                "user_expressions": {},
-            }
+        return {
+            "status": "ok",
+            "execution_count": self.execution_count,
+            "payload": [],
+            "user_expressions": {},
+        }
