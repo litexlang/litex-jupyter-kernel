@@ -22,7 +22,7 @@ def install_my_kernel_spec(user=True, prefix=None):
         with open(os.path.join(td, "kernel.json"), "w") as f:
             json.dump(kernel_json, f, sort_keys=True)
         shutil.copyfile(_ICON_PATH, pathlib.Path(td) / _ICON_PATH.name)
-        print("Installing IPython kernel spec")
+        print("Installing litex kernel...")
         KernelSpecManager().install_kernel_spec(td, "litex", user=user, prefix=prefix)
 
 
