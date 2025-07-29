@@ -94,10 +94,3 @@ class LitexKernel(Kernel):
 
         if interrupted:
             return {"status": "abort", "execution_count": self.execution_count}
-
-        return {
-            "status": "ok",
-            "execution_count": self.execution_count,
-            "payload": [],
-            "user_expressions": {},
-        }
