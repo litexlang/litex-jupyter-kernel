@@ -90,3 +90,10 @@ class LitexKernel(Kernel):
 
         if interrupted:
             return {"status": "abort", "execution_count": self.execution_count}
+        else:
+            return {
+                "status": "ok",
+                "execution_count": self.execution_count,
+                "payload": [],
+                "user_expressions": {"name": "stdout", "text": output},
+            }
