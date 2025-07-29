@@ -2,13 +2,12 @@ from ipykernel.kernelbase import Kernel
 from pexpect import replwrap, EOF
 
 from subprocess import check_output
-import os.path
 
 import re
 
 __version__ = "0.1.0"
 version_pat = re.compile(r"version (\d+(\.\d+)+)")
-litex_path = r"../litex -jupyter"
+litex_path = "litex"
 
 
 class LitexKernel(Kernel):
@@ -39,9 +38,6 @@ class LitexKernel(Kernel):
 
     def _start_litex(self):
         """Start the litex REPL."""
-        if not os.path.exists(litex_path):
-            raise FileNotFoundError(f"Litex executable not found at {litex_path}")
-
         # Create a unique prompt to avoid conflicts with other REPLs
         prompt = ">>> "
         self.litexwrapper = replwrap.REPLWrapper(litex_path, prompt, None)
