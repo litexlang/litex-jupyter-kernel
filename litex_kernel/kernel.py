@@ -40,36 +40,22 @@ class LitexKernel(Kernel):
         """Start the litex REPL."""
         # Create a unique prompt to avoid conflicts with other REPLs
         prompt = ">>> "
-        self.litexwrapper = replwrap.REPLWrapper(litex_path, prompt, None)
+        continuation_prompt = "... "
+        self.litexwrapper = replwrap.REPLWrapper(
+            litex_path, prompt, None, continuation_prompt=continuation_prompt
+        )
         self.litexwrapper.child.delaybeforesend = 0.1
 
     def do_execute(
         self, code, silent, store_history=True, user_expressions=None, allow_stdin=False
     ):
         self.silent = silent
-        if not code.strip():
-            return {
-                "status": "ok",
-                "execution_count": self.execution_count,
-                "payload": [],
-                "user_expressions": {},
-            }
-
-        if code.strip().endswith(":"):
-            error_content = {
-                "ename": "",
-                "evalue": "Cell ends with colon",
-                "traceback": [],
-            }
-            self.send_response(self.iopub_socket, "error", error_content)
-            error_content["execution_count"] = self.execution_count
-            error_content["status"] = "error"
-            return error_content
-
         interrupted = False
+        litex_indentation = " " * 4
+        if litex_indentation in code:
+            code = code + "\n"
         try:
-            # Note: timeout=None tells IREPLWrapper to do incremental output.  Also note that the return value from run_command is not needed, because the output was already sent by IREPLWrapper.
-            output = self.litexwrapper.run_command(code.rstrip(), timeout=None)
+            output = self.litexwrapper.run_command(code, timeout=None)
             self.send_response(
                 self.iopub_socket, "stream", {"name": "stdout", "text": output}
             )
