@@ -1,12 +1,19 @@
 # A jupyter kernel for litex
 
-## installation(macOS support only for now)
+## installation (support macOS and Ubuntu)
 
-This reuqires Litex core and Python3, you could install litex core firstly with following command.
+This reuqires Litex core and Python3
+
+On macOS, you could install litex core by following command:
 
 ```bash
-# install litex from homebrew
 brew install litexlang/tap/litex
+```
+
+On Ubuntu, you should download litex core deb package (litex_{version}_{architecture}.deb) from [here](https://github.com/litexlang/golitex/releases) to your target system and run following command:
+
+```bash
+sudo dpkg -i litex_{version}_{architecture}.deb
 ```
 
 After litex core installation, we could install litex_kernel for your jupyter
