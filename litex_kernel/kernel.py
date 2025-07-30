@@ -10,6 +10,25 @@ version_pat = re.compile(r"version (\d+(\.\d+)+)")
 litex_path = "litex"
 
 
+def code_formatter(code):
+    litex_indentation = " " * 4
+    code_lines = code.splitlines()
+    formatted_lines = []
+    for index, line in enumerate(code_lines):
+        is_last_line = index >= len(code_lines) - 1
+        if line.strip() == "":
+            continue
+        elif line.startswith(litex_indentation) and (
+            is_last_line
+            or not code_lines[index + 1].rstrip().startswith(litex_indentation)
+        ):
+            formatted_lines.append(line.rstrip())
+            formatted_lines.append("")
+        else:
+            formatted_lines.append(line.rstrip())
+    return "\n".join(formatted_lines)
+
+
 class LitexKernel(Kernel):
     implementation = "litex_kernel"
     implementation_version = __version__
@@ -51,11 +70,8 @@ class LitexKernel(Kernel):
     ):
         self.silent = silent
         interrupted = False
-        litex_indentation = " " * 4
-        if litex_indentation in code:
-            code = code + "\n"
         try:
-            output = self.litexwrapper.run_command(code, timeout=None)
+            output = self.litexwrapper.run_command(code_formatter(code), timeout=None)
             self.send_response(
                 self.iopub_socket, "stream", {"name": "stdout", "text": output}
             )
