@@ -5,7 +5,7 @@ from subprocess import check_output
 
 import re
 
-__version__ = "0.1.0"
+__version__ = "0.1.6.beta"
 version_pat = re.compile(r"version (\d+(\.\d+)+)")
 litex_path = "litex"
 
