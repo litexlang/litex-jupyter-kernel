@@ -5,7 +5,7 @@ from subprocess import check_output
 
 import re
 
-__version__ = "0.1.9.beta"
+__version__ = "1.0.0"
 version_pat = re.compile(r"Litex Kernel: golitex (.*)")
 litex_path = "litex"
 
