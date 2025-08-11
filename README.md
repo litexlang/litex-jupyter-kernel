@@ -4,7 +4,7 @@ This is iPython kernel designed for JupyterLab, which aims to help Litex user to
 
 ## installation
 
-This reuqires Litex core and Python3, you could install Litex core follow the [README](https://github.com/litexlang/golitex). 
+This reuqires Litex core and Python3, you could install Litex core follow the [Installation](https://litexlang.org/doc/Installation). 
 
 After Litex core installation, you could install litex_kernel for your jupyter:
 
